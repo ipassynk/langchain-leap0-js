@@ -42,6 +42,11 @@ async function main(): Promise<number> {
   return 0;
 }
 
-void main().then((code) => {
-  process.exitCode = code;
-});
+void main()
+  .then((code) => {
+    process.exitCode = code;
+  })
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
