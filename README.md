@@ -38,8 +38,11 @@ try {
   const result = await backend.execute("echo 'Hello LangChain from Leap0.dev'");
   console.log(result.output);
 } finally {
-  await sandbox.delete();
-  await client.close();
+  try {
+    await sandbox.delete();
+  } finally {
+    await client.close();
+  }
 }
 ```
 
