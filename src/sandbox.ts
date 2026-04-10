@@ -44,10 +44,17 @@ function bodySnippet(body: unknown): string {
  *   `new Leap0Sandbox({ client, sandbox })`.
  * - **Lazy**: `new Leap0Sandbox({ leap0Config, createParams })` then `await initialize()`.
  * - **One step**: `await Leap0Sandbox.create({ ... })`.
+ *
+ * `close()` deletes the remote sandbox only when this instance created it
+ * (`create` / `initialize`). Attached sandboxes (`fromConnected`, `fromId`, or
+ * constructor with `client` + `sandbox`) are left intact; close still drops
+ * the local handle and may close the client per `ownClient`.
  */
 export class Leap0Sandbox extends BaseSandbox {
   #client: Leap0Client | null = null;
   #sandbox: Sandbox | null = null;
+  /** True only when this instance created the sandbox via {@link initialize} / {@link Leap0Sandbox.create}. */
+  #ownsSandbox = false;
   #ownsClient = false;
   #commandTimeoutMs: number;
   #pending: Omit<Leap0SandboxOptions, "client" | "sandbox">;
@@ -184,6 +191,7 @@ export class Leap0Sandbox extends BaseSandbox {
       };
 
       this.#sandbox = await this.#client.sandboxes.create(createParams);
+      this.#ownsSandbox = true;
 
       const files = {
         ...this.#pending.initialFiles,
@@ -195,6 +203,7 @@ export class Leap0Sandbox extends BaseSandbox {
     } catch (error) {
       const box = this.#sandbox;
       this.#sandbox = null;
+      this.#ownsSandbox = false;
       if (box) {
         try {
           await box.delete();
@@ -353,8 +362,10 @@ export class Leap0Sandbox extends BaseSandbox {
 
   async close(): Promise<void> {
     const box = this.#sandbox;
+    const shouldDelete = this.#ownsSandbox;
     this.#sandbox = null;
-    if (box) {
+    this.#ownsSandbox = false;
+    if (box && shouldDelete) {
       try {
         await box.delete();
       } catch {

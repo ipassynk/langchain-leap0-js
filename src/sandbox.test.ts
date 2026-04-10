@@ -180,10 +180,19 @@ describe("Leap0Sandbox", () => {
   });
 
   describe("close", () => {
-    it("deletes sandbox", async () => {
+    it("deletes sandbox when this instance created it", async () => {
       const s = await Leap0Sandbox.create({ leap0Config: {} });
       await s.close();
       expect(mockSandbox.delete).toHaveBeenCalled();
+    });
+
+    it("does not delete sandbox when attached via fromConnected", async () => {
+      const { Leap0Client } = await import("leap0");
+      const client = new Leap0Client({});
+      const sb = (await client.sandboxes.create({})) as Sandbox;
+      const backend = Leap0Sandbox.fromConnected(client, sb);
+      await backend.close();
+      expect(mockSandbox.delete).not.toHaveBeenCalled();
     });
   });
 });
