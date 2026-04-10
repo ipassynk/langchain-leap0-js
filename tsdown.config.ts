@@ -17,7 +17,7 @@ export default defineConfig([
     entry: ["./src/index.ts"],
     format: ["cjs"],
     dts: true,
-    clean: true,
+    clean: false,
     sourcemap: true,
     outDir: "dist",
     outExtensions: () => ({ js: ".cjs" }),
