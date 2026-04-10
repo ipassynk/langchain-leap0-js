@@ -146,11 +146,19 @@ export class Leap0Sandbox extends BaseSandbox {
       } catch {
         // ignore
       }
+      if (error instanceof Leap0Error && error.statusCode === 404) {
+        throw new Leap0SandboxError(
+          `Sandbox not found: ${sandboxId}`,
+          "SANDBOX_NOT_FOUND",
+          error,
+        );
+      }
       throw new Leap0SandboxError(
-        `Sandbox not found: ${sandboxId}`,
-        "SANDBOX_NOT_FOUND",
+        `Failed to connect to sandbox: ${error instanceof Error ? error.message : String(error)}`,
+        "SANDBOX_CREATION_FAILED",
         error instanceof Error ? error : undefined,
       );
+    }
     }
   }
 
