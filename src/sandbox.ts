@@ -194,8 +194,14 @@ export class Leap0Sandbox extends BaseSandbox {
         await this.#uploadInitialFiles(files);
       }
     } catch (error) {
-      if (error instanceof Leap0SandboxError) {
-        throw error;
+      const box = this.#sandbox;
+      this.#sandbox = null;
+      if (box) {
+        try {
+          await box.delete();
+        } catch {
+          // ignore
+        }
       }
       if (this.#ownsClient && this.#client) {
         try {
@@ -205,6 +211,9 @@ export class Leap0Sandbox extends BaseSandbox {
         }
         this.#client = null;
         this.#ownsClient = false;
+      }
+      if (error instanceof Leap0SandboxError) {
+        throw error;
       }
       throw new Leap0SandboxError(
         `Failed to create Leap0 sandbox: ${error instanceof Error ? error.message : String(error)}`,
