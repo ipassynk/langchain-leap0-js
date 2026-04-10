@@ -257,13 +257,9 @@ export class Leap0Sandbox extends BaseSandbox {
       };
     } catch (error) {
       if (error instanceof Leap0TimeoutError) {
-        if (error instanceof Leap0TimeoutError) {
-          throw new Leap0SandboxError(
-            "Command timed out",
-            "COMMAND_TIMEOUT",
-            error,
-          );
-        }
+        throw new Leap0SandboxError(
+          "Command timed out",
+          "COMMAND_TIMEOUT",
           error,
         );
       }
