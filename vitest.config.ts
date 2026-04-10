@@ -2,7 +2,13 @@ import path from "node:path";
 import { configDefaults, defineConfig, type ViteUserConfigExport } from "vitest/config";
 import dotenv from "dotenv";
 
-dotenv.config({ path: path.resolve(__dirname, ".env") });
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { configDefaults, defineConfig, type ViteUserConfigExport } from "vitest/config";
+import dotenv from "dotenv";
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(dirname, ".env") });
 
 export default defineConfig((env) => {
   const common: ViteUserConfigExport = {
