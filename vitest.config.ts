@@ -1,8 +1,4 @@
 import path from "node:path";
-import { configDefaults, defineConfig, type ViteUserConfigExport } from "vitest/config";
-import dotenv from "dotenv";
-
-import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { configDefaults, defineConfig, type ViteUserConfigExport } from "vitest/config";
 import dotenv from "dotenv";

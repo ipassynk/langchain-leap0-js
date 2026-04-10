@@ -159,7 +159,6 @@ export class Leap0Sandbox extends BaseSandbox {
         error instanceof Error ? error : undefined,
       );
     }
-    }
   }
 
   async initialize(overrides?: {
