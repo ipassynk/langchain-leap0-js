@@ -26,6 +26,10 @@
     "sandbox",
     "deepagents"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leap0-dev/langchain-leap0-js"
+  },
   "license": "Apache-2.0",
   "dependencies": {},
   "peerDependencies": {
