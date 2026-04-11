@@ -18,13 +18,14 @@ const mockSandbox = {
 };
 
 const mockCreate = vi.fn().mockResolvedValue(mockSandbox);
+const mockGet = vi.fn().mockResolvedValue(mockSandbox);
 
 vi.mock("leap0", async (importOriginal) => {
   const actual = await importOriginal<typeof import("leap0")>();
   return {
     ...actual,
     Leap0Client: class MockLeap0Client {
-      sandboxes = { create: mockCreate };
+      sandboxes = { create: mockCreate, get: mockGet };
       close = vi.fn().mockResolvedValue(undefined);
     },
   };
@@ -34,6 +35,7 @@ describe("Leap0Sandbox", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCreate.mockResolvedValue(mockSandbox);
+    mockGet.mockResolvedValue(mockSandbox);
   });
 
   describe("constructor", () => {
@@ -191,6 +193,14 @@ describe("Leap0Sandbox", () => {
       const client = new Leap0Client({});
       const sb = (await client.sandboxes.create({})) as Sandbox;
       const backend = Leap0Sandbox.fromConnected(client, sb);
+      await backend.close();
+      expect(mockSandbox.delete).not.toHaveBeenCalled();
+    });
+
+    it("does not delete sandbox when attached via fromId", async () => {
+      const id = "existing-sandbox-id";
+      const backend = await Leap0Sandbox.fromId(id);
+      expect(mockGet).toHaveBeenCalledWith(id);
       await backend.close();
       expect(mockSandbox.delete).not.toHaveBeenCalled();
     });
